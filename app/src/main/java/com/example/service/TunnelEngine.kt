@@ -47,7 +47,7 @@ object TunnelEngine {
                     addLog("SSL/TLS Handshake verified successfully (Cipher: TLS_AES_256_GCM_SHA384)", LogType.SUCCESS)
                 }
 
-                // Step 2: Payload / WebSocket handshake
+                // Step 2: Carga útil / WebSocket handshake
                 if (profile.tunnelType.contains("WebSocket")) {
                     val wsTarget = if (profile.wsHost.isNotBlank()) profile.wsHost else "${profile.sshHost}:${profile.sshPort}"
                     addLog("Establishing WebSocket connection to $wsTarget via path ${profile.wsPath}...", LogType.PROXY)
@@ -59,19 +59,19 @@ object TunnelEngine {
                         .replace("[method]", "GET")
                         .replace("[protocol]", "HTTP/1.1")
 
-                    addLog("Injecting Custom Payload:\n$processedPayload", LogType.PAYLOAD)
+                    addLog("Injecting Custom Carga útil:\n$processedPayload", LogType.PAYLOAD)
                     delay(800)
                     addLog("HTTP/1.1 101 Switching Protocols (WebSocket connection established)", LogType.SUCCESS)
                 } else if (profile.customPayload.isNotBlank()) {
-                    addLog("Applying Custom HTTP Payload injection...", LogType.PAYLOAD)
+                    addLog("Applying Custom HTTP Carga útil injection...", LogType.PAYLOAD)
                     delay(600)
-                    addLog("Payload delivered successfully. Server acknowledged connection.", LogType.SUCCESS)
+                    addLog("Carga útil delivered successfully. Server acknowledged connection.", LogType.SUCCESS)
                 }
 
                 // Step 3: dtunnel daemon authentication & SSH handshake
                 addLog("Starting dtunnel routing daemon (local TUN interface)...", LogType.INFO)
                 delay(500)
-                addLog("Authenticating SSH user '${profile.sshUser}' with public key / password...", LogType.SSH)
+                addLog("Authenticating Usuario SSH '${profile.sshUser}' with public key / password...", LogType.SSH)
                 delay(900)
                 addLog("SSH Handshake completed. Encryption: ChaCha20-Poly1305 / RSA", LogType.SSH)
                 delay(400)
