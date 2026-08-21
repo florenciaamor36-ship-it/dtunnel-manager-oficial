@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Guardar
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -16,10 +16,10 @@ import androidx.compose.ui.unit.sp
 import com.example.ui.viewmodel.TunnelViewModel
 
 @Composable
-fun PayloadScreen(viewModel: TunnelViewModel) {
+fun Carga útilScreen(viewModel: TunnelViewModel) {
     val selectedProfile by viewModel.selectedProfile.collectAsState()
     var payload by remember(selectedProfile) {
-        mutableStateOf(selectedProfile?.customPayload ?: "GET / HTTP/1.1[crlf]Host: [host_port][crlf]Upgrade: websocket[crlf][crlf]")
+        mutableStateOf(selectedProfile?.customCarga útil ?: "GET / HTTP/1.1[crlf]Host: [host_port][crlf]Upgrade: websocket[crlf][crlf]")
     }
 
     Column(
@@ -36,7 +36,7 @@ fun PayloadScreen(viewModel: TunnelViewModel) {
         ) {
             Column {
                 Text(
-                    text = "Custom Payload Editor",
+                    text = "Custom Carga útil Editaror",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -47,7 +47,7 @@ fun PayloadScreen(viewModel: TunnelViewModel) {
                     color = Color(0xFF94A3B8)
                 )
             }
-            Icon(imageVector = Icons.Default.Code, contentDescription = "Payload", tint = Color(0xFF00F0FF))
+            Icon(imageVector = Icons.Default.Code, contentDescription = "Carga útil", tint = Color(0xFF00F0FF))
         }
 
         // Preset buttons
@@ -69,7 +69,7 @@ fun PayloadScreen(viewModel: TunnelViewModel) {
         OutlinedTextField(
             value = payload,
             onValueChange = { payload = it },
-            label = { Text("HTTP Payload Request") },
+            label = { Text("Solicitud de carga HTTP") },
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
@@ -105,16 +105,16 @@ fun PayloadScreen(viewModel: TunnelViewModel) {
         Button(
             onClick = {
                 selectedProfile?.let { profile ->
-                    viewModel.saveProfile(profile.copy(customPayload = payload))
+                    viewModel.saveProfile(profile.copy(customCarga útil = payload))
                 }
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00F0FF)),
             shape = RoundedCornerShape(8.dp)
         ) {
-            Icon(imageVector = Icons.Default.Save, contentDescription = "Save", tint = Color(0xFF0A0F1D))
+            Icon(imageVector = Icons.Default.Guardar, contentDescription = "Guardar", tint = Color(0xFF0A0F1D))
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "Save Payload", color = Color(0xFF0A0F1D), fontWeight = FontWeight.Bold)
+            Text(text = "Guardar Carga útil", color = Color(0xFF0A0F1D), fontWeight = FontWeight.Bold)
         }
     }
 }
