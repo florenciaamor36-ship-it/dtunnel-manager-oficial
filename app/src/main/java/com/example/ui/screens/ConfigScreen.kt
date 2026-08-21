@@ -6,7 +6,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Guardar
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -56,7 +56,7 @@ fun ConfigScreen(viewModel: TunnelViewModel) {
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
-            label = { Text("Profile Name") },
+            label = { Text("Nombre del perfil") },
             modifier = Modifier.fillMaxWidth(),
             colors = textFieldColors()
         )
@@ -71,7 +71,7 @@ fun ConfigScreen(viewModel: TunnelViewModel) {
                 value = tunnelType,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Tunnel Protocol") },
+                label = { Text("Protocolo del túnel") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedType) },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -99,14 +99,14 @@ fun ConfigScreen(viewModel: TunnelViewModel) {
             OutlinedTextField(
                 value = sshHost,
                 onValueChange = { sshHost = it },
-                label = { Text("SSH Host / IP") },
+                label = { Text("Host SSH / IP") },
                 modifier = Modifier.weight(2f),
                 colors = textFieldColors()
             )
             OutlinedTextField(
                 value = sshPort,
                 onValueChange = { sshPort = it },
-                label = { Text("Port") },
+                label = { Text("Puerto") },
                 modifier = Modifier.weight(1f),
                 colors = textFieldColors()
             )
@@ -116,14 +116,14 @@ fun ConfigScreen(viewModel: TunnelViewModel) {
             OutlinedTextField(
                 value = sshUser,
                 onValueChange = { sshUser = it },
-                label = { Text("Username") },
+                label = { Text("Usuario") },
                 modifier = Modifier.weight(1f),
                 colors = textFieldColors()
             )
             OutlinedTextField(
                 value = sshPass,
                 onValueChange = { sshPass = it },
-                label = { Text("Password") },
+                label = { Text("Contraseña") },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.weight(1f),
                 colors = textFieldColors()
@@ -136,14 +136,14 @@ fun ConfigScreen(viewModel: TunnelViewModel) {
             OutlinedTextField(
                 value = wsHost,
                 onValueChange = { wsHost = it },
-                label = { Text("Remote Proxy / WS Host (optional)") },
+                label = { Text("Proxy remoto / host WS (opcional)") },
                 modifier = Modifier.fillMaxWidth(),
                 colors = textFieldColors()
             )
             OutlinedTextField(
                 value = wsPath,
                 onValueChange = { wsPath = it },
-                label = { Text("WebSocket Path") },
+                label = { Text("Ruta WebSocket") },
                 modifier = Modifier.fillMaxWidth(),
                 colors = textFieldColors()
             )
@@ -155,7 +155,7 @@ fun ConfigScreen(viewModel: TunnelViewModel) {
             OutlinedTextField(
                 value = sni,
                 onValueChange = { sni = it },
-                label = { Text("SNI (Server Name Indication)") },
+                label = { Text("SNI (Server Nombre Indication)") },
                 modifier = Modifier.fillMaxWidth(),
                 colors = textFieldColors()
             )
@@ -176,9 +176,9 @@ fun ConfigScreen(viewModel: TunnelViewModel) {
                     wsHost = wsHost,
                     wsPath = wsPath,
                     sni = sni,
-                    customPayload = selectedProfile?.customPayload ?: "",
+                    customCarga útil = selectedProfile?.customCarga útil ?: "",
                     wsHeaders = selectedProfile?.wsHeaders ?: "",
-                    isSelected = true
+                    isSeleccionado = true
                 )
                 viewModel.saveProfile(profile)
             },
@@ -186,9 +186,9 @@ fun ConfigScreen(viewModel: TunnelViewModel) {
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00F0FF)),
             shape = RoundedCornerShape(8.dp)
         ) {
-            Icon(imageVector = Icons.Default.Save, contentDescription = "Save", tint = Color(0xFF0A0F1D))
+            Icon(imageVector = Icons.Default.Guardar, contentDescription = "Guardar", tint = Color(0xFF0A0F1D))
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "Save & Apply Configuration", color = Color(0xFF0A0F1D), fontWeight = FontWeight.Bold)
+            Text(text = "Guardar & Apply Configuration", color = Color(0xFF0A0F1D), fontWeight = FontWeight.Bold)
         }
 
         Spacer(modifier = Modifier.height(32.dp))
