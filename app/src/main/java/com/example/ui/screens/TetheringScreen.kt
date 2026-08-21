@@ -24,10 +24,10 @@ import androidx.compose.ui.unit.sp
 import com.example.ui.viewmodel.TunnelViewModel
 
 @Composable
-fun Compartir internetScreen(viewModel: TunnelViewModel) {
+fun TetheringScreen(viewModel: TunnelViewModel) {
     val context = LocalContext.current
     var isProxyServerRunning by remember { mutableStateOf(false) }
-    var proxyPuerto by remember { mutableStateOf("1080") }
+    var proxyPort by remember { mutableStateOf("1080") }
     var selectedTabMode by remember { mutableIntStateOf(0) } // 0: USB Compartir internet, 1: Wi-Fi Directo / Hotspot, 2: Smart TV Proxy
 
     val scrollState = rememberScrollState()
@@ -71,21 +71,21 @@ fun Compartir internetScreen(viewModel: TunnelViewModel) {
                 ) {
                     Column {
                         Text(text = "HTTP/SOCKS Proxy Server", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                        Text(text = if (isProxyServerRunning) "Active on 0.0.0.0:$proxyPuerto" else "Server Stopped", fontSize = 12.sp, color = if (isProxyServerRunning) Color(0xFF10B981) else Color(0xFF94A3B8))
+                        Text(text = if (isProxyServerRunning) "Active on 0.0.0.0:$proxyPort" else "Server Stopped", fontSize = 12.sp, color = if (isProxyServerRunning) Color(0xFF10B981) else Color(0xFF94A3B8))
                     }
                     Switch(
                         checked = isProxyServerRunning,
                         onCheckedChange = {
                             isProxyServerRunning = it
-                            Toast.makeText(context, if (it) "Proxy Compartir internet Server Started on port $proxyPuerto" else "Proxy Server Stopped", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, if (it) "Proxy Compartir internet Server Started on port $proxyPort" else "Proxy Server Stopped", Toast.LENGTH_SHORT).show()
                         },
                         colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF00F0FF), checkedTrackColor = Color(0xFF131C2E))
                     )
                 }
 
                 OutlinedTextField(
-                    value = proxyPuerto,
-                    onValueChange = { proxyPuerto = it },
+                    value = proxyPort,
+                    onValueChange = { proxyPort = it },
                     label = { Text("Puerto proxy local") },
                     modifier = Modifier.fillMaxWidth(),
                     colors = textFieldColors()
@@ -119,15 +119,15 @@ fun Compartir internetScreen(viewModel: TunnelViewModel) {
         }
 
         when (selectedTabMode) {
-            0 -> UsbCompartir internetCard()
+            0 -> UsbTetherCard()
             1 -> WifiDirectProxyCard()
-            2 -> SmartTvProxyCard(proxyPuerto)
+            2 -> SmartTvProxyCard(proxyPort)
         }
     }
 }
 
 @Composable
-fun UsbCompartir internetCard() {
+fun UsbTetherCard() {
     val context = LocalContext.current
     val adbCommand = "adb forward tcp:1080 tcp:1080"
 
