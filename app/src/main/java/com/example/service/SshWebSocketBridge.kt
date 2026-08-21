@@ -26,7 +26,7 @@ class SshWebSocketBridge(
                 while (isActive && !closed.get() && channel.isConnected) {
                     val count = input.read(buffer)
                     if (count < 0) break
-                    if (count > 0 && !socket.send(okio.ByteString.of(buffer, 0, count))) break
+                    if (count > 0 && !socket.send(okio.ByteString.of(buffer.copyOf(count)))) break
                 }
             } finally { close() }
         }
@@ -34,8 +34,9 @@ class SshWebSocketBridge(
 
     fun onWebSocketBytes(bytes: ByteArray) {
         if (closed.get()) return
-        channel.outputStream?.write(bytes)
-        channel.outputStream?.flush()
+        val output = channel.outputStream
+        output.write(bytes)
+        output.flush()
     }
 
     fun close() {
