@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.Guardar
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -19,7 +19,7 @@ import com.example.ui.viewmodel.TunnelViewModel
 fun PayloadScreen(viewModel: TunnelViewModel) {
     val selectedProfile by viewModel.selectedProfile.collectAsState()
     var payload by remember(selectedProfile) {
-        mutableStateOf(selectedProfile?.customCarga útil ?: "GET / HTTP/1.1[crlf]Host: [host_port][crlf]Upgrade: websocket[crlf][crlf]")
+        mutableStateOf(selectedProfile?.customPayload ?: "GET / HTTP/1.1[crlf]Host: [host_port][crlf]Upgrade: websocket[crlf][crlf]")
     }
 
     Column(
@@ -105,14 +105,14 @@ fun PayloadScreen(viewModel: TunnelViewModel) {
         Button(
             onClick = {
                 selectedProfile?.let { profile ->
-                    viewModel.saveProfile(profile.copy(customCarga útil = payload))
+                    viewModel.saveProfile(profile.copy(customPayload = payload))
                 }
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00F0FF)),
             shape = RoundedCornerShape(8.dp)
         ) {
-            Icon(imageVector = Icons.Default.Guardar, contentDescription = "Guardar", tint = Color(0xFF0A0F1D))
+            Icon(imageVector = Icons.Default.Save, contentDescription = "Guardar", tint = Color(0xFF0A0F1D))
             Spacer(modifier = Modifier.width(8.dp))
             Text(text = "Guardar Carga útil", color = Color(0xFF0A0F1D), fontWeight = FontWeight.Bold)
         }
