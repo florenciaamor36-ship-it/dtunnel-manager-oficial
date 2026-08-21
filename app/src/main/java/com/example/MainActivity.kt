@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
                     }) { padding ->
                         Box(Modifier.fillMaxSize().padding(padding)) {
                             when (selectedTab) {
-                                0 -> DashboardScreen(vm); 1 -> ConfigScreen(vm); 2 -> PayloadScreen(vm); 3 -> LogsScreen(vm)
+                                0 -> DashboardScreen(vm, onOpenLogs = { selectedTab = 3 }, onOpenHwid = { selectedTab = 5 }); 1 -> ConfigScreen(vm); 2 -> PayloadScreen(vm); 3 -> LogsScreen(vm)
                                 4 -> ProfilesScreen(vm); 5 -> AuthScreen(vm); 6 -> TetheringScreen(vm); 7 -> ManagedUsersScreen(vm)
                                 8 -> BackupScreen(vm)
                             }
