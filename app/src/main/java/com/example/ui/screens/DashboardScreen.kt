@@ -24,7 +24,7 @@ import com.example.service.TunnelState
 import com.example.ui.viewmodel.TunnelViewModel
 
 @Composable
-fun DashboardScreen(viewModel: TunnelViewModel) {
+fun DashboardScreen(viewModel: TunnelViewModel, onOpenLogs: () -> Unit = {}, onOpenHwid: () -> Unit = {}) {
     val tunnelState by viewModel.tunnelState.collectAsState()
     val selectedProfile by viewModel.selectedProfile.collectAsState()
 
@@ -201,7 +201,12 @@ fun DashboardScreen(viewModel: TunnelViewModel) {
             )
         }
 
-        // Bottom stats cards
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            OutlinedButton(onClick = onOpenLogs, modifier = Modifier.weight(1f)) { Icon(Icons.Default.ListAlt, "Registros"); Spacer(Modifier.width(4.dp)); Text("Registros") }
+            OutlinedButton(onClick = onOpenHwid, modifier = Modifier.weight(1f)) { Icon(Icons.Default.Fingerprint, "HWID"); Spacer(Modifier.width(4.dp)); Text("HWID") }
+        }
+
+        // Métricas de velocidad
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
