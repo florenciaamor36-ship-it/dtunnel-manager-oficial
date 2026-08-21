@@ -6,7 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Eliminar
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,7 +21,7 @@ import com.example.data.LogType
 import com.example.ui.viewmodel.TunnelViewModel
 
 @Composable
-fun LogsScreen(viewModel: TunnelViewModel) {
+fun RegistrosScreen(viewModel: TunnelViewModel) {
     val logs by viewModel.logs.collectAsState()
 
     Column(
@@ -37,17 +37,17 @@ fun LogsScreen(viewModel: TunnelViewModel) {
             verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
         ) {
             Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                Icon(imageVector = Icons.Default.Terminal, contentDescription = "Logs", tint = Color(0xFF00F0FF))
+                Icon(imageVector = Icons.Default.Terminal, contentDescription = "Registros", tint = Color(0xFF00F0FF))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "dtunnel Console Logs",
+                    text = "dtunnel Console Registros",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
             }
-            IconButton(onClick = { viewModel.clearLogs() }) {
-                Icon(imageVector = Icons.Default.Delete, contentDescription = "Clear Logs", tint = Color(0xFF94A3B8))
+            IconButton(onClick = { viewModel.clearRegistros() }) {
+                Icon(imageVector = Icons.Default.Eliminar, contentDescription = "Borrar registros", tint = Color(0xFF94A3B8))
             }
         }
 
