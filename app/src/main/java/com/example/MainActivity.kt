@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Router
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Terminal
@@ -119,6 +120,19 @@ class MainActivity : ComponentActivity() {
                                 )
                             )
                             NavigationBarItem(
+                                icon = { Icon(Icons.Default.Person, contentDescription = "Users") },
+                                label = { Text("Users") },
+                                selected = selectedTab == 7,
+                                onClick = { selectedTab = 7 },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = Color(0xFF0A0F1D),
+                                    selectedTextColor = Color(0xFF00F0FF),
+                                    indicatorColor = Color(0xFF00F0FF),
+                                    unselectedIconColor = Color(0xFF94A3B8),
+                                    unselectedTextColor = Color(0xFF94A3B8)
+                                )
+                            )
+                            NavigationBarItem(
                                 icon = { Icon(Icons.Default.Router, contentDescription = "Tethering") },
                                 label = { Text("Share") },
                                 selected = selectedTab == 6,
@@ -147,6 +161,7 @@ class MainActivity : ComponentActivity() {
                             4 -> ProfilesScreen(viewModel)
                             5 -> AuthScreen(viewModel)
                             6 -> TetheringScreen(viewModel)
+                            7 -> ManagedUsersScreen(viewModel)
                         }
                     }
                 }
