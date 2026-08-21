@@ -28,11 +28,11 @@ class MainActivity : ComponentActivity() {
                 var selectedTab by remember { mutableIntStateOf(0) }
                 var drawerOpen by remember { mutableStateOf(false) }
                 val items = listOf(
-                    Triple("Dashboard", Icons.Default.Home, 0), Triple("Config", Icons.Default.Settings, 1),
-                    Triple("Payload", Icons.Default.Code, 2), Triple("Logs", Icons.Default.Terminal, 3),
-                    Triple("Servers", Icons.Default.Dns, 4), Triple("Auth", Icons.Default.Fingerprint, 5),
-                    Triple("Share", Icons.Default.Router, 6), Triple("Users", Icons.Default.Person, 7),
-                    Triple("Import / Export", Icons.Default.ImportExport, 8)
+                    Triple("Panel", Icons.Default.Home, 0), Triple("Configuración", Icons.Default.Settings, 1),
+                    Triple("Carga útil", Icons.Default.Code, 2), Triple("Registros", Icons.Default.Terminal, 3),
+                    Triple("Servidores", Icons.Default.Dns, 4), Triple("Autenticación", Icons.Default.Fingerprint, 5),
+                    Triple("Compartir", Icons.Default.Router, 6), Triple("Usuarios", Icons.Default.Person, 7),
+                    Triple("Importar / Exportar", Icons.Default.ImportExport, 8)
                 )
                 val drawerState = rememberDrawerState(DrawerValue.Closed)
                 LaunchedEffect(drawerOpen) { if (drawerOpen) drawerState.open() else drawerState.close() }
@@ -60,8 +60,8 @@ class MainActivity : ComponentActivity() {
                     }) { padding ->
                         Box(Modifier.fillMaxSize().padding(padding)) {
                             when (selectedTab) {
-                                0 -> DashboardScreen(vm); 1 -> ConfigScreen(vm); 2 -> PayloadScreen(vm); 3 -> LogsScreen(vm)
-                                4 -> ProfilesScreen(vm); 5 -> AuthScreen(vm); 6 -> TetheringScreen(vm); 7 -> ManagedUsersScreen(vm)
+                                0 -> DashboardScreen(vm); 1 -> ConfigScreen(vm); 2 -> Carga útilScreen(vm); 3 -> RegistrosScreen(vm)
+                                4 -> ProfilesScreen(vm); 5 -> AuthScreen(vm); 6 -> Compartir internetScreen(vm); 7 -> ManagedUsersScreen(vm)
                                 8 -> BackupScreen(vm)
                             }
                         }
