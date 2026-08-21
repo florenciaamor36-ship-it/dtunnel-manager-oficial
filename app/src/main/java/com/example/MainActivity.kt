@@ -19,6 +19,7 @@ import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.viewmodel.TunnelViewModel
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -40,7 +41,7 @@ class MainActivity : ComponentActivity() {
                     drawerState = drawerState,
                     gesturesEnabled = true,
                     drawerContent = {
-                        ModalDrawerSheet(containerColor = Color(0xFF131C2E)) {
+                        ModalDrawerSheet(drawerContainerColor = Color(0xFF131C2E)) {
                             Text("Dtunnel VPS Manager", color = Color(0xFF00F0FF), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(24.dp))
                             items.forEach { (label, icon, tab) ->
                                 NavigationDrawerItem(
