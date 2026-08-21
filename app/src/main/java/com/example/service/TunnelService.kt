@@ -7,11 +7,13 @@ import android.app.Service
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import com.example.MainActivity
 import com.example.R
 
 class TunnelService : Service() {
+    private var wakeLock: PowerManager.WakeLock? = null
 
     companion object {
         const val CHANNEL_ID = "NetTunnelServiceChannel"
@@ -33,6 +35,13 @@ class TunnelService : Service() {
         when (intent?.action) {
             ACTION_START -> {
                 startForeground(NOTIFICATION_ID, createNotification("Estado: Conectando..."))
+                val power = getSystemService(POWER_SERVICE) as PowerManager
+                if (wakeLock?.isHeld != true) {
+                    wakeLock = power.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "DtunnelManager::Tunnel").apply {
+                        setReferenceCounted(false)
+                        acquire()
+                    }
+                }
             }
             ACTION_STATUS -> {
                 val status = intent.getStringExtra(EXTRA_STATUS) ?: "Desconectado"
@@ -40,11 +49,23 @@ class TunnelService : Service() {
             }
             ACTION_STOP -> {
                 TunnelEngine.stopTunnel()
+                releaseWakeLock()
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
             }
         }
-        return START_NOT_STICKY
+        return START_STICKY
+    }
+
+    override fun onDestroy() {
+        releaseWakeLock()
+        TunnelEngine.stopTunnel()
+        super.onDestroy()
+    }
+
+    private fun releaseWakeLock() {
+        wakeLock?.let { if (it.isHeld) it.release() }
+        wakeLock = null
     }
 
     private fun createNotificationChannel() {
