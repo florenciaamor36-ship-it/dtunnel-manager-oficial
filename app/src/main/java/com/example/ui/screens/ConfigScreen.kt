@@ -6,7 +6,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Guardar
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -176,9 +176,9 @@ fun ConfigScreen(viewModel: TunnelViewModel) {
                     wsHost = wsHost,
                     wsPath = wsPath,
                     sni = sni,
-                    customCarga útil = selectedProfile?.customCarga útil ?: "",
+                    customPayload = selectedProfile?.customPayload ?: "",
                     wsHeaders = selectedProfile?.wsHeaders ?: "",
-                    isSeleccionado = true
+                    isSelected = true
                 )
                 viewModel.saveProfile(profile)
             },
@@ -186,7 +186,7 @@ fun ConfigScreen(viewModel: TunnelViewModel) {
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00F0FF)),
             shape = RoundedCornerShape(8.dp)
         ) {
-            Icon(imageVector = Icons.Default.Guardar, contentDescription = "Guardar", tint = Color(0xFF0A0F1D))
+            Icon(imageVector = Icons.Default.Save, contentDescription = "Guardar", tint = Color(0xFF0A0F1D))
             Spacer(modifier = Modifier.width(8.dp))
             Text(text = "Guardar & Apply Configuration", color = Color(0xFF0A0F1D), fontWeight = FontWeight.Bold)
         }
