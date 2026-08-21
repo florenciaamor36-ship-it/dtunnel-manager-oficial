@@ -18,6 +18,8 @@ class TunnelService : Service() {
         const val NOTIFICATION_ID = 1001
         const val ACTION_START = "ACTION_START"
         const val ACTION_STOP = "ACTION_STOP"
+        const val ACTION_STATUS = "ACTION_STATUS"
+        const val EXTRA_STATUS = "EXTRA_STATUS"
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -30,8 +32,11 @@ class TunnelService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_START -> {
-                val notification = createNotification("NetTunnel is Connected & Secure")
-                startForeground(NOTIFICATION_ID, notification)
+                startForeground(NOTIFICATION_ID, createNotification("Estado: Conectando..."))
+            }
+            ACTION_STATUS -> {
+                val status = intent.getStringExtra(EXTRA_STATUS) ?: "Desconectado"
+                getSystemService(NotificationManager::class.java)?.notify(NOTIFICATION_ID, createNotification("Estado: $status"))
             }
             ACTION_STOP -> {
                 TunnelEngine.stopTunnel()
@@ -66,7 +71,7 @@ class TunnelService : Service() {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("NetTunnel VPN")
             .setContentText(message)
-            .setSmallIcon(android.R.drawable.ic_menu_compass)
+            .setSmallIcon(android.R.drawable.ic_lock_lock)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
             .build()
