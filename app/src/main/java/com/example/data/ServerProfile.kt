@@ -3,7 +3,7 @@ package com.example.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableNombre = "server_profiles")
+@Entity(tableName = "server_profiles")
 data class ServerProfile(
     @PrimaryKey(autoGenerate = true) val id: Long = 0L,
     val name: String,
