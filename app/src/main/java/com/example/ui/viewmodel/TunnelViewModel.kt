@@ -64,10 +64,10 @@ class TunnelViewModel(application: Application) : AndroidViewModel(application) 
                 if (list.isEmpty()) {
                     val defaultProfile = ServerProfile(
                         name = "Free SG 01 - WebSocket SSH",
-                        sshHost = "sg1.dtunnel.secure.net",
-                        sshPort = 443,
-                        sshUser = "nettunnel",
-                        sshPass = "123456",
+                        sshHost = "",
+                        sshPort = 22,
+                        sshUser = "",
+                        sshPass = "",
                         tunnelType = "SSH + WebSocket",
                         wsPath = "/ws-tunnel",
                         wsHeaders = "Host: sg1.dtunnel.secure.net\r\nUpgrade: websocket\r\nConnection: Upgrade",
@@ -102,6 +102,10 @@ class TunnelViewModel(application: Application) : AndroidViewModel(application) 
             action = TunnelService.ACTION_STOP
         }
         context.startService(intent)
+    }
+
+    fun updateProfile(profile: ServerProfile) {
+        viewModelScope.launch { repository.update(profile) }
     }
 
     fun saveProfile(profile: ServerProfile) {
