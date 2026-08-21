@@ -24,11 +24,11 @@ import androidx.compose.ui.unit.sp
 import com.example.ui.viewmodel.TunnelViewModel
 
 @Composable
-fun TetheringScreen(viewModel: TunnelViewModel) {
+fun Compartir internetScreen(viewModel: TunnelViewModel) {
     val context = LocalContext.current
     var isProxyServerRunning by remember { mutableStateOf(false) }
-    var proxyPort by remember { mutableStateOf("1080") }
-    var selectedTabMode by remember { mutableIntStateOf(0) } // 0: USB Tethering, 1: Wi-Fi Direct / Hotspot, 2: Smart TV Proxy
+    var proxyPuerto by remember { mutableStateOf("1080") }
+    var selectedTabMode by remember { mutableIntStateOf(0) } // 0: USB Compartir internet, 1: Wi-Fi Directo / Hotspot, 2: Smart TV Proxy
 
     val scrollState = rememberScrollState()
 
@@ -46,10 +46,10 @@ fun TetheringScreen(viewModel: TunnelViewModel) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(imageVector = Icons.Default.Router, contentDescription = "Tethering", tint = Color(0xFF00F0FF))
+                Icon(imageVector = Icons.Default.Router, contentDescription = "Compartir internet", tint = Color(0xFF00F0FF))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Tethering & Proxy Share",
+                    text = "Compartir internet & Proxy Share",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -71,22 +71,22 @@ fun TetheringScreen(viewModel: TunnelViewModel) {
                 ) {
                     Column {
                         Text(text = "HTTP/SOCKS Proxy Server", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                        Text(text = if (isProxyServerRunning) "Active on 0.0.0.0:$proxyPort" else "Server Stopped", fontSize = 12.sp, color = if (isProxyServerRunning) Color(0xFF10B981) else Color(0xFF94A3B8))
+                        Text(text = if (isProxyServerRunning) "Active on 0.0.0.0:$proxyPuerto" else "Server Stopped", fontSize = 12.sp, color = if (isProxyServerRunning) Color(0xFF10B981) else Color(0xFF94A3B8))
                     }
                     Switch(
                         checked = isProxyServerRunning,
                         onCheckedChange = {
                             isProxyServerRunning = it
-                            Toast.makeText(context, if (it) "Proxy Tethering Server Started on port $proxyPort" else "Proxy Server Stopped", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, if (it) "Proxy Compartir internet Server Started on port $proxyPuerto" else "Proxy Server Stopped", Toast.LENGTH_SHORT).show()
                         },
                         colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF00F0FF), checkedTrackColor = Color(0xFF131C2E))
                     )
                 }
 
                 OutlinedTextField(
-                    value = proxyPort,
-                    onValueChange = { proxyPort = it },
-                    label = { Text("Proxy Local Port") },
+                    value = proxyPuerto,
+                    onValueChange = { proxyPuerto = it },
+                    label = { Text("Puerto proxy local") },
                     modifier = Modifier.fillMaxWidth(),
                     colors = textFieldColors()
                 )
@@ -101,13 +101,13 @@ fun TetheringScreen(viewModel: TunnelViewModel) {
             FilterChip(
                 selected = selectedTabMode == 0,
                 onClick = { selectedTabMode = 0 },
-                label = { Text("USB Tether") },
+                label = { Text("Compartir por USB") },
                 leadingIcon = { Icon(Icons.Default.Usb, contentDescription = "USB", modifier = Modifier.size(16.dp)) }
             )
             FilterChip(
                 selected = selectedTabMode == 1,
                 onClick = { selectedTabMode = 1 },
-                label = { Text("Wi-Fi Direct") },
+                label = { Text("Wi-Fi Directo") },
                 leadingIcon = { Icon(Icons.Default.Wifi, contentDescription = "Wifi", modifier = Modifier.size(16.dp)) }
             )
             FilterChip(
@@ -119,15 +119,15 @@ fun TetheringScreen(viewModel: TunnelViewModel) {
         }
 
         when (selectedTabMode) {
-            0 -> UsbTetheringCard()
+            0 -> UsbCompartir internetCard()
             1 -> WifiDirectProxyCard()
-            2 -> SmartTvProxyCard(proxyPort)
+            2 -> SmartTvProxyCard(proxyPuerto)
         }
     }
 }
 
 @Composable
-fun UsbTetheringCard() {
+fun UsbCompartir internetCard() {
     val context = LocalContext.current
     val adbCommand = "adb forward tcp:1080 tcp:1080"
 
@@ -140,7 +140,7 @@ fun UsbTetheringCard() {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(imageVector = Icons.Default.Usb, contentDescription = "USB", tint = Color(0xFF00F0FF))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "USB Debugging Tethering (PdaNet Style)", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Text(text = "USB Debugging Compartir internet (PdaNet Style)", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
             }
             Text(
                 text = "Share VPN internet over USB cable directly to your PC or secondary device using ADB port forwarding without needing root access.",
@@ -197,10 +197,10 @@ fun WifiDirectProxyCard() {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(imageVector = Icons.Default.Wifi, contentDescription = "Wifi", tint = Color(0xFF00F0FF))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Wi-Fi Direct & Hotspot Proxy", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Text(text = "Wi-Fi Directo & Hotspot Proxy", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
             }
             Text(
-                text = "Enable your Android Wi-Fi Hotspot or Wi-Fi Direct. Connected devices can route their traffic through this proxy IP and port.",
+                text = "Enable your Android Wi-Fi Hotspot or Wi-Fi Directo. Connected devices can route their traffic through this proxy IP and port.",
                 fontSize = 12.sp,
                 color = Color(0xFF94A3B8)
             )
@@ -244,9 +244,9 @@ fun SmartTvProxyCard(port: String) {
             }
             Text(
                 text = "Configure your Smart TV Wi-Fi settings to use manual proxy:\n\n" +
-                       "1. Connect your Smart TV to the same Wi-Fi Hotspot or Wi-Fi Direct as this phone.\n" +
+                       "1. Connect your Smart TV to the same Wi-Fi Hotspot or Wi-Fi Directo as this phone.\n" +
                        "2. In TV Wi-Fi settings, set Proxy to Manual.\n" +
-                       "3. Enter Proxy Host: `192.168.43.1` and Proxy Port: `$port`.\n" +
+                       "3. Enter Proxy Host: `192.168.43.1` and Proxy Puerto: `$port`.\n" +
                        "4. Enjoy secure VPN streaming on your Smart TV!",
                 fontSize = 12.sp,
                 color = Color(0xFF94A3B8)
