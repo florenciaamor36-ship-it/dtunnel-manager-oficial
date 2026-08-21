@@ -6,7 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Eliminar
 import androidx.compose.material.icons.filled.LockReset
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Block
@@ -27,8 +27,8 @@ fun ManagedUsersScreen(viewModel: TunnelViewModel) {
     var editorOpen by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxSize().background(Color(0xFF0A0F1D)).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Column { Text("Users & HWID", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold); Text("${users.size} managed accounts", color = Color(0xFF94A3B8)) }
-            Button(onClick = { editorOpen = true }) { Icon(Icons.Default.Add, null); Spacer(Modifier.width(4.dp)); Text("Add") }
+            Column { Text("Usuarios y HWID", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold); Text("${users.size} cuentas administradas", color = Color(0xFF94A3B8)) }
+            Button(onClick = { editorOpen = true }) { Icon(Icons.Default.Add, null); Spacer(Modifier.width(4.dp)); Text("Agregar") }
         }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(users, key = { it.id }) { user ->
@@ -36,14 +36,14 @@ fun ManagedUsersScreen(viewModel: TunnelViewModel) {
                     Row(Modifier.fillMaxWidth().padding(12.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                         Row(Modifier.weight(1f)) { Icon(Icons.Default.Person, null, tint = Color(0xFF00F0FF)); Spacer(Modifier.width(8.dp)); Column {
                             Text(user.username, color = Color.White, fontWeight = FontWeight.Bold)
-                            Text("HWID: ${if (user.hwid.isBlank()) "not linked" else user.hwid}", color = Color(0xFF94A3B8), fontSize = 12.sp)
-                            Text("${user.status} • expires ${user.expiresAt.ifBlank { "never" }} • max ${user.maxDevices}", color = Color(0xFF94A3B8), fontSize = 12.sp)
-                            Text("Protocols: ${user.protocols}", color = Color(0xFF64748B), fontSize = 11.sp)
+                            Text("HWID: ${if (user.hwid.isBlank()) "no vinculado" else user.hwid}", color = Color(0xFF94A3B8), fontSize = 12.sp)
+                            Text("${user.status} • vence ${user.expiresAt.ifBlank { "nunca" }} • máximo ${user.maxDevices}", color = Color(0xFF94A3B8), fontSize = 12.sp)
+                            Text("Protocolos: ${user.protocols}", color = Color(0xFF64748B), fontSize = 11.sp)
                         } }
                         Row {
                             IconButton(onClick = { viewModel.resetUserHwid(user) }) { Icon(Icons.Default.LockReset, "Reset HWID", tint = Color(0xFFF59E0B)) }
                             IconButton(onClick = { viewModel.setUserStatus(user, if (user.status == "Suspended") "Active" else "Suspended") }) { Icon(Icons.Default.Block, "Suspend or activate", tint = if (user.status == "Suspended") Color(0xFF10B981) else Color(0xFFF59E0B)) }
-                            IconButton(onClick = { viewModel.deleteManagedUser(user) }) { Icon(Icons.Default.Delete, "Delete", tint = Color(0xFFEF4444)) }
+                            IconButton(onClick = { viewModel.deleteManagedUser(user) }) { Icon(Icons.Default.Eliminar, "Eliminar", tint = Color(0xFFEF4444)) }
                         }
                     }
                 }
@@ -51,27 +51,27 @@ fun ManagedUsersScreen(viewModel: TunnelViewModel) {
         }
     }
     if (editorOpen) {
-        ManagedUserEditor(onDismiss = { editorOpen = false }, onSave = { viewModel.saveManagedUser(it); editorOpen = false })
+        ManagedUserEditaror(onDismiss = { editorOpen = false }, onGuardar = { viewModel.saveManagedUser(it); editorOpen = false })
     }
 }
 
 @Composable
-private fun ManagedUserEditor(onDismiss: () -> Unit, onSave: (ManagedUser) -> Unit) {
+private fun ManagedUserEditaror(onDismiss: () -> Unit, onGuardar: (ManagedUser) -> Unit) {
     var username by remember { mutableStateOf("") }; var password by remember { mutableStateOf("") }
-    var hwid by remember { mutableStateOf("") }; var expires by remember { mutableStateOf("") }
+    var hwid by remember { mutableStateOf("") }; var vence by remember { mutableStateOf("") }
     var maxDevices by remember { mutableStateOf("1") }; var protocols by remember { mutableStateOf("SSH") }
     var error by remember { mutableStateOf<String?>(null) }
-    AlertDialog(onDismissRequest = onDismiss, title = { Text("Add managed user") }, text = { Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        OutlinedTextField(username, { username = it }, label = { Text("Username") }, singleLine = true)
-        OutlinedTextField(password, { password = it }, label = { Text("Password") }, singleLine = true, visualTransformation = PasswordVisualTransformation())
-        OutlinedTextField(hwid, { hwid = it }, label = { Text("HWID (optional)") }, singleLine = true)
-        OutlinedTextField(expires, { expires = it }, label = { Text("Expires YYYY-MM-DD") }, singleLine = true)
-        OutlinedTextField(maxDevices, { maxDevices = it.filter(Char::isDigit) }, label = { Text("Max devices") }, singleLine = true)
-        OutlinedTextField(protocols, { protocols = it }, label = { Text("Protocols") }, singleLine = true)
+    AlertDialog(onDismissRequest = onDismiss, title = { Text("Agregar usuario") }, text = { Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        OutlinedTextField(username, { username = it }, label = { Text("Usuario") }, singleLine = true)
+        OutlinedTextField(password, { password = it }, label = { Text("Contraseña") }, singleLine = true, visualTransformation = PasswordVisualTransformation())
+        OutlinedTextField(hwid, { hwid = it }, label = { Text("HWID (opcional)") }, singleLine = true)
+        OutlinedTextField(expires, { expires = it }, label = { Text("Vence AAAA-MM-DD") }, singleLine = true)
+        OutlinedTextField(maxDevices, { maxDevices = it.filter(Char::isDigit) }, label = { Text("Máximo de dispositivos") }, singleLine = true)
+        OutlinedTextField(protocols, { protocols = it }, label = { Text("Protocolos") }, singleLine = true)
         error?.let { Text(it, color = MaterialTheme.colorScheme.error, fontSize = 12.sp) }
     } }, confirmButton = { TextButton(onClick = {
         val max = maxDevices.toIntOrNull()
-        error = when { username.isBlank() -> "Username is required"; password.isBlank() -> "Password is required"; max == null || max < 1 -> "Max devices must be at least 1"; else -> null }
-        if (error == null) onSave(ManagedUser(username = username.trim(), password = password, hwid = hwid.trim(), expiresAt = expires.trim(), maxDevices = max!!, protocols = protocols.trim().ifBlank { "SSH" }))
-    }) { Text("Save") } }, dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } })
+        error = when { username.isBlank() -> "Usuario is required"; password.isBlank() -> "Contraseña is required"; max == null || max < 1 -> "Máximo de dispositivos must be at least 1"; else -> null }
+        if (error == null) onGuardar(ManagedUser(username = username.trim(), password = password, hwid = hwid.trim(), expiresAt = expires.trim(), maxDevices = max!!, protocols = protocols.trim().ifBlank { "SSH" }))
+    }) { Text("Guardar") } }, dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } })
 }
