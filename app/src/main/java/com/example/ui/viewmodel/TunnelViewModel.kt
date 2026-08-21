@@ -13,9 +13,12 @@ import com.example.service.TunnelService
 import com.example.service.TunnelState
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import org.json.JSONArray
+import org.json.JSONObject
 
 class TunnelViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: TunnelRepository
+    private val serverDao: com.example.data.ServerDao
     private val userDao: com.example.data.ManagedUserDao
 
     val profiles: StateFlow<List<ServerProfile>>
@@ -29,7 +32,7 @@ class TunnelViewModel(application: Application) : AndroidViewModel(application) 
     val logs: StateFlow<List<LogEntry>> = _logs
 
     init {
-        val serverDao = AppDatabase.getDatabase(application).serverDao()
+        serverDao = AppDatabase.getDatabase(application).serverDao()
         repository = TunnelRepository(serverDao)
         userDao = AppDatabase.getDatabase(application).managedUserDao()
 
@@ -163,5 +166,34 @@ class TunnelViewModel(application: Application) : AndroidViewModel(application) 
 
     fun clearLogs() {
         _logs.value = emptyList()
+    }
+
+    fun exportSnapshot(): String {
+        val root = JSONObject()
+        root.put("version", 1)
+        root.put("profiles", JSONArray(profiles.value.map { p -> JSONObject().apply {
+            put("name", p.name); put("sshHost", p.sshHost); put("sshPort", p.sshPort); put("sshUser", p.sshUser)
+            put("tunnelType", p.tunnelType); put("wsHost", p.wsHost); put("wsPath", p.wsPath); put("wsHeaders", p.wsHeaders)
+            put("sni", p.sni); put("customPayload", p.customPayload); put("isSelected", p.isSelected)
+        } }))
+        root.put("users", JSONArray(managedUsers.value.map { u -> JSONObject().apply {
+            put("username", u.username); put("hwid", u.hwid); put("hwidRequired", u.hwidRequired); put("expiresAt", u.expiresAt)
+            put("maxDevices", u.maxDevices); put("protocols", u.protocols); put("status", u.status); put("createdAt", u.createdAt)
+        } }))
+        return root.toString(2)
+    }
+
+    fun importSnapshot(text: String) {
+        viewModelScope.launch {
+            val root = JSONObject(text)
+            root.optJSONArray("profiles")?.let { array -> for (i in 0 until array.length()) {
+                val p = array.getJSONObject(i)
+                serverDao.insertProfile(ServerProfile(name = p.optString("name"), sshHost = p.optString("sshHost"), sshPort = p.optInt("sshPort", 22), sshUser = p.optString("sshUser"), sshPass = "", tunnelType = p.optString("tunnelType", "SSH + WebSocket"), wsHost = p.optString("wsHost"), wsPath = p.optString("wsPath", "/ws"), wsHeaders = p.optString("wsHeaders"), sni = p.optString("sni"), customPayload = p.optString("customPayload"), isSelected = p.optBoolean("isSelected", false)))
+            } }
+            root.optJSONArray("users")?.let { array -> for (i in 0 until array.length()) {
+                val u = array.getJSONObject(i)
+                userDao.insert(com.example.data.ManagedUser(username = u.optString("username"), password = "", hwid = u.optString("hwid"), hwidRequired = u.optBoolean("hwidRequired", true), expiresAt = u.optString("expiresAt"), maxDevices = u.optInt("maxDevices", 1), protocols = u.optString("protocols", "SSH"), status = u.optString("status", "Active"), createdAt = u.optLong("createdAt", System.currentTimeMillis())))
+            } }
+        }
     }
 }
