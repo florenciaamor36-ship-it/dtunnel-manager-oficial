@@ -58,6 +58,19 @@ class TunnelViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             TunnelEngine.state.collect { state ->
                 _tunnelState.value = state
+                val context = getApplication<Application>()
+                val status = when (state) {
+                    TunnelState.CONNECTED -> "Conectado"
+                    TunnelState.CONNECTING -> "Reconectando..."
+                    TunnelState.ERROR -> "Error / desconectado"
+                    TunnelState.DISCONNECTED -> "Desconectado"
+                }
+                if (state != TunnelState.DISCONNECTED) {
+                    context.startService(Intent(context, TunnelService::class.java).apply {
+                        action = TunnelService.ACTION_STATUS
+                        putExtra(TunnelService.EXTRA_STATUS, status)
+                    })
+                }
             }
         }
 
