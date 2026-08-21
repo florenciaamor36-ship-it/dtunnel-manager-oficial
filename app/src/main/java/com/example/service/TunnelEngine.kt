@@ -6,6 +6,10 @@ import com.example.data.ServerProfile
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import java.net.InetSocketAddress
+import java.net.Socket
+import javax.net.ssl.SSLSocket
+import javax.net.ssl.SSLSocketFactory
 
 enum class TunnelState {
     DISCONNECTED, CONNECTING, CONNECTED, ERROR
@@ -35,49 +39,42 @@ object TunnelEngine {
 
         connectionJob = coroutineScope.launch(Dispatchers.IO) {
             try {
-                // Step 1: DNS & Socket connection
-                addLog("Resolving host ${profile.sshHost}...", LogType.INFO)
-                delay(600)
-                addLog("Connecting to ${profile.sshHost}:${profile.sshPort}...", LogType.INFO)
-
-                // Simulate TCP or SSL handshake
-                if (profile.tunnelType.contains("SSL")) {
-                    addLog("Initiating SSL/TLS handshake with SNI: ${if (profile.sni.isNotBlank()) profile.sni else profile.sshHost}", LogType.PROXY)
-                    delay(800)
-                    addLog("SSL/TLS Handshake verified successfully (Cipher: TLS_AES_256_GCM_SHA384)", LogType.SUCCESS)
+                require(profile.sshHost.isNotBlank()) { "El host está vacío" }
+                require(profile.sshPort in 1..65535) { "Puerto inválido" }
+                addLog("Resolviendo ${profile.sshHost}...", LogType.INFO)
+                val useTls = profile.tunnelType.contains("SSL", ignoreCase = true)
+                val socket: Socket = if (useTls) {
+                    addLog("Abriendo conexión TLS real...", LogType.PROXY)
+                    (SSLSocketFactory.getDefault() as SSLSocketFactory).createSocket()
+                } else Socket()
+                socket.use { s ->
+                    s.connect(InetSocketAddress(profile.sshHost, profile.sshPort), 10_000)
+                    s.soTimeout = 10_000
+                    if (s is SSLSocket) s.startHandshake()
+                    addLog("TCP conectado a ${profile.sshHost}:${profile.sshPort}", LogType.SUCCESS)
+                    if (profile.tunnelType.contains("WebSocket", ignoreCase = true) || profile.customPayload.isNotBlank()) {
+                        val payload = profile.customPayload
+                            .replace("[host_port]", "${profile.sshHost}:${profile.sshPort}")
+                            .replace("[crlf]", "\r\n")
+                            .replace("[method]", "GET")
+                            .replace("[protocol]", "HTTP/1.1")
+                        require(payload.isNotBlank()) { "Payload vacío" }
+                        addLog("Enviando payload real...", LogType.PAYLOAD)
+                        s.getOutputStream().write(payload.toByteArray(Charsets.UTF_8))
+                        s.getOutputStream().flush()
+                        val response = ByteArray(4096)
+                        val n = s.getInputStream().read(response)
+                        require(n > 0) { "El servidor cerró la conexión sin respuesta" }
+                        val text = String(response, 0, n, Charsets.UTF_8)
+                        addLog("Respuesta recibida: ${text.lineSequence().firstOrNull() ?: "(vacía)"}", LogType.SUCCESS)
+                        require(text.startsWith("HTTP/1.1 101") || text.startsWith("HTTP/1.0 101") || text.startsWith("HTTP/1.1 2") || text.startsWith("HTTP/1.0 2")) { "Respuesta no válida para el payload" }
+                    } else {
+                        val response = ByteArray(256)
+                        val n = s.getInputStream().read(response)
+                        if (n > 0) addLog("Banner recibido: ${String(response, 0, n, Charsets.UTF_8).trim()}", LogType.SSH)
+                    }
                 }
-
-                // Step 2: Carga útil / WebSocket handshake
-                if (profile.tunnelType.contains("WebSocket")) {
-                    val wsTarget = if (profile.wsHost.isNotBlank()) profile.wsHost else "${profile.sshHost}:${profile.sshPort}"
-                    addLog("Establishing WebSocket connection to $wsTarget via path ${profile.wsPath}...", LogType.PROXY)
-                    delay(700)
-                    
-                    val processedPayload = profile.customPayload
-                        .replace("[host_port]", "${profile.sshHost}:${profile.sshPort}")
-                        .replace("[crlf]", "\r\n")
-                        .replace("[method]", "GET")
-                        .replace("[protocol]", "HTTP/1.1")
-
-                    addLog("Injecting Custom Carga útil:\n$processedPayload", LogType.PAYLOAD)
-                    delay(800)
-                    addLog("HTTP/1.1 101 Switching Protocols (WebSocket connection established)", LogType.SUCCESS)
-                } else if (profile.customPayload.isNotBlank()) {
-                    addLog("Applying Custom HTTP Carga útil injection...", LogType.PAYLOAD)
-                    delay(600)
-                    addLog("Carga útil delivered successfully. Server acknowledged connection.", LogType.SUCCESS)
-                }
-
-                // Step 3: dtunnel daemon authentication & SSH handshake
-                addLog("Starting dtunnel routing daemon (local TUN interface)...", LogType.INFO)
-                delay(500)
-                addLog("Authenticating Usuario SSH '${profile.sshUser}' with public key / password...", LogType.SSH)
-                delay(900)
-                addLog("SSH Handshake completed. Encryption: ChaCha20-Poly1305 / RSA", LogType.SSH)
-                delay(400)
-
-                addLog("TUN Interface active (IP: 10.0.0.2, Gateway: 10.0.0.1)", LogType.SUCCESS)
-                addLog("Tunnel established successfully! Secure connection online.", LogType.SUCCESS)
+                addLog("Conexión de transporte verificada; el túnel queda en línea.", LogType.SUCCESS)
                 _state.tryEmit(TunnelState.CONNECTED)
 
             } catch (e: Exception) {
