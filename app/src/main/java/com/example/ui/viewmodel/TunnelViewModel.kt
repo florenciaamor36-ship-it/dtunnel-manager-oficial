@@ -16,9 +16,11 @@ import kotlinx.coroutines.launch
 
 class TunnelViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: TunnelRepository
+    private val userDao: com.example.data.ManagedUserDao
 
     val profiles: StateFlow<List<ServerProfile>>
     val selectedProfile: StateFlow<ServerProfile?>
+    val managedUsers: StateFlow<List<com.example.data.ManagedUser>>
 
     private val _tunnelState = MutableStateFlow(TunnelState.DISCONNECTED)
     val tunnelState: StateFlow<TunnelState> = _tunnelState
@@ -29,6 +31,13 @@ class TunnelViewModel(application: Application) : AndroidViewModel(application) 
     init {
         val serverDao = AppDatabase.getDatabase(application).serverDao()
         repository = TunnelRepository(serverDao)
+        userDao = AppDatabase.getDatabase(application).managedUserDao()
+
+        managedUsers = userDao.observeAll().stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            emptyList()
+        )
 
         profiles = repository.allProfiles.stateIn(
             viewModelScope,
@@ -134,6 +143,18 @@ class TunnelViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             repository.selectProfile(profile)
         }
+    }
+
+    fun saveManagedUser(user: com.example.data.ManagedUser) {
+        viewModelScope.launch { if (user.id == 0L) userDao.insert(user) else userDao.update(user) }
+    }
+
+    fun deleteManagedUser(user: com.example.data.ManagedUser) {
+        viewModelScope.launch { userDao.delete(user) }
+    }
+
+    fun resetUserHwid(user: com.example.data.ManagedUser) {
+        viewModelScope.launch { userDao.resetHwid(user.id) }
     }
 
     fun clearLogs() {
