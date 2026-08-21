@@ -10,9 +10,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Eliminar
 import androidx.compose.material.icons.filled.Dns
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Editar
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -40,7 +40,7 @@ fun ProfilesScreen(viewModel: TunnelViewModel) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
         ) {
-            Text("VPS Profiles", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Text("Perfiles VPS", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
             Button(
                 onClick = { editingProfile = null; editorOpen = true },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00F0FF)),
@@ -48,7 +48,7 @@ fun ProfilesScreen(viewModel: TunnelViewModel) {
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add", tint = Color(0xFF0A0F1D))
                 Spacer(Modifier.width(4.dp))
-                Text("Add VPS", color = Color(0xFF0A0F1D), fontWeight = FontWeight.Bold)
+                Text("Agregar VPS", color = Color(0xFF0A0F1D), fontWeight = FontWeight.Bold)
             }
         }
 
@@ -57,12 +57,12 @@ fun ProfilesScreen(viewModel: TunnelViewModel) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(profiles, key = { it.id }) { profile ->
-                val isSelected = selectedProfile?.id == profile.id
+                val isSeleccionado = selectedProfile?.id == profile.id
                 Card(
                     modifier = Modifier.fillMaxWidth().clickable { viewModel.selectProfile(profile) },
-                    colors = CardDefaults.cardColors(containerColor = if (isSelected) Color(0xFF1E293B) else Color(0xFF131C2E)),
+                    colors = CardDefaults.cardColors(containerColor = if (isSeleccionado) Color(0xFF1E293B) else Color(0xFF131C2E)),
                     shape = RoundedCornerShape(12.dp),
-                    border = if (isSelected) BorderStroke(1.dp, Color(0xFF00F0FF)) else null
+                    border = if (isSeleccionado) BorderStroke(1.dp, Color(0xFF00F0FF)) else null
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -70,7 +70,7 @@ fun ProfilesScreen(viewModel: TunnelViewModel) {
                         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                     ) {
                         Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                            Icon(Icons.Default.Dns, contentDescription = "VPS", tint = if (isSelected) Color(0xFF00F0FF) else Color(0xFF64748B), modifier = Modifier.size(32.dp))
+                            Icon(Icons.Default.Dns, contentDescription = "VPS", tint = if (isSeleccionado) Color(0xFF00F0FF) else Color(0xFF64748B), modifier = Modifier.size(32.dp))
                             Spacer(Modifier.width(12.dp))
                             Column {
                                 Text(profile.name, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
@@ -79,13 +79,13 @@ fun ProfilesScreen(viewModel: TunnelViewModel) {
                             }
                         }
                         Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                            if (isSelected) Icon(Icons.Default.CheckCircle, contentDescription = "Selected", tint = Color(0xFF10B981))
+                            if (isSeleccionado) Icon(Icons.Default.CheckCircle, contentDescription = "Seleccionado", tint = Color(0xFF10B981))
                             IconButton(onClick = { editingProfile = profile; editorOpen = true }) {
-                                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color(0xFF00F0FF))
+                                Icon(Icons.Default.Editar, contentDescription = "Editar", tint = Color(0xFF00F0FF))
                             }
                             if (profiles.size > 1) {
                                 IconButton(onClick = { viewModel.deleteProfile(profile) }) {
-                                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color(0xFFEF4444))
+                                    Icon(Icons.Default.Eliminar, contentDescription = "Eliminar", tint = Color(0xFFEF4444))
                                 }
                             }
                         }
@@ -96,10 +96,10 @@ fun ProfilesScreen(viewModel: TunnelViewModel) {
     }
 
     if (editorOpen) {
-        VpsProfileEditor(
+        VpsProfileEditaror(
             initial = editingProfile,
             onDismiss = { editorOpen = false },
-            onSave = { profile ->
+            onGuardar = { profile ->
                 if (editingProfile == null) viewModel.saveProfile(profile) else viewModel.updateProfile(profile)
                 editorOpen = false
             }
@@ -108,10 +108,10 @@ fun ProfilesScreen(viewModel: TunnelViewModel) {
 }
 
 @Composable
-private fun VpsProfileEditor(
+private fun VpsProfileEditaror(
     initial: ServerProfile?,
     onDismiss: () -> Unit,
-    onSave: (ServerProfile) -> Unit
+    onGuardar: (ServerProfile) -> Unit
 ) {
     var name by remember { mutableStateOf(initial?.name ?: "") }
     var host by remember { mutableStateOf(initial?.sshHost ?: "") }
@@ -122,32 +122,32 @@ private fun VpsProfileEditor(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (initial == null) "Add VPS" else "Edit VPS") },
+        title = { Text(if (initial == null) "Agregar VPS" else "Editar VPS") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(name, { name = it }, label = { Text("Name") }, singleLine = true)
-                OutlinedTextField(host, { host = it }, label = { Text("IP or domain") }, singleLine = true)
-                OutlinedTextField(port, { port = it.filter(Char::isDigit) }, label = { Text("SSH port") }, singleLine = true)
-                OutlinedTextField(user, { user = it }, label = { Text("SSH user") }, singleLine = true)
-                OutlinedTextField(password, { password = it }, label = { Text("SSH password") }, singleLine = true, visualTransformation = PasswordVisualTransformation())
+                OutlinedTextField(name, { name = it }, label = { Text("Nombre") }, singleLine = true)
+                OutlinedTextField(host, { host = it }, label = { Text("IP o dominio") }, singleLine = true)
+                OutlinedTextField(port, { port = it.filter(Char::isDigit) }, label = { Text("Puerto SSH") }, singleLine = true)
+                OutlinedTextField(user, { user = it }, label = { Text("Usuario SSH") }, singleLine = true)
+                OutlinedTextField(password, { password = it }, label = { Text("Contraseña SSH") }, singleLine = true, visualTransformation = PasswordVisualTransformation())
                 error?.let { Text(it, color = MaterialTheme.colorScheme.error, fontSize = 12.sp) }
             }
         },
         confirmButton = {
             TextButton(onClick = {
-                val parsedPort = port.toIntOrNull()
+                val parsedPuerto = port.toIntOrNull()
                 error = when {
                     name.isBlank() -> "Enter a name"
-                    host.isBlank() -> "Enter an IP or domain"
-                    user.isBlank() -> "Enter an SSH user"
-                    parsedPort == null || parsedPort !in 1..65535 -> "Enter a valid port"
+                    host.isBlank() -> "Enter an IP o dominio"
+                    user.isBlank() -> "Enter an Usuario SSH"
+                    parsedPuerto == null || parsedPuerto !in 1..65535 -> "Enter a valid port"
                     else -> null
                 }
                 if (error == null) {
-                    onSave(ServerProfile(initial?.id ?: 0L, name.trim(), host.trim(), parsedPort!!, user.trim(), password, initial?.tunnelType ?: "SSH Direct", initial?.wsHost ?: "", initial?.wsPath ?: "/ws", initial?.wsHeaders ?: "", initial?.sni ?: "", initial?.customPayload ?: "", initial?.isSelected ?: false))
+                    onGuardar(ServerProfile(initial?.id ?: 0L, name.trim(), host.trim(), parsedPuerto!!, user.trim(), password, initial?.tunnelType ?: "SSH Direct", initial?.wsHost ?: "", initial?.wsPath ?: "/ws", initial?.wsHeaders ?: "", initial?.sni ?: "", initial?.customCarga útil ?: "", initial?.isSeleccionado ?: false))
                 }
-            }) { Text("Save") }
+            }) { Text("Guardar") }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } }
     )
 }
