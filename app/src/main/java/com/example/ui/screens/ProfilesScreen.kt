@@ -10,9 +10,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Eliminar
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Dns
-import androidx.compose.material.icons.filled.Editar
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -57,12 +57,12 @@ fun ProfilesScreen(viewModel: TunnelViewModel) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(profiles, key = { it.id }) { profile ->
-                val isSeleccionado = selectedProfile?.id == profile.id
+                val isSelected = selectedProfile?.id == profile.id
                 Card(
                     modifier = Modifier.fillMaxWidth().clickable { viewModel.selectProfile(profile) },
-                    colors = CardDefaults.cardColors(containerColor = if (isSeleccionado) Color(0xFF1E293B) else Color(0xFF131C2E)),
+                    colors = CardDefaults.cardColors(containerColor = if (isSelected) Color(0xFF1E293B) else Color(0xFF131C2E)),
                     shape = RoundedCornerShape(12.dp),
-                    border = if (isSeleccionado) BorderStroke(1.dp, Color(0xFF00F0FF)) else null
+                    border = if (isSelected) BorderStroke(1.dp, Color(0xFF00F0FF)) else null
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -70,7 +70,7 @@ fun ProfilesScreen(viewModel: TunnelViewModel) {
                         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                     ) {
                         Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                            Icon(Icons.Default.Dns, contentDescription = "VPS", tint = if (isSeleccionado) Color(0xFF00F0FF) else Color(0xFF64748B), modifier = Modifier.size(32.dp))
+                            Icon(Icons.Default.Dns, contentDescription = "VPS", tint = if (isSelected) Color(0xFF00F0FF) else Color(0xFF64748B), modifier = Modifier.size(32.dp))
                             Spacer(Modifier.width(12.dp))
                             Column {
                                 Text(profile.name, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
@@ -79,13 +79,13 @@ fun ProfilesScreen(viewModel: TunnelViewModel) {
                             }
                         }
                         Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                            if (isSeleccionado) Icon(Icons.Default.CheckCircle, contentDescription = "Seleccionado", tint = Color(0xFF10B981))
+                            if (isSelected) Icon(Icons.Default.CheckCircle, contentDescription = "Seleccionado", tint = Color(0xFF10B981))
                             IconButton(onClick = { editingProfile = profile; editorOpen = true }) {
-                                Icon(Icons.Default.Editar, contentDescription = "Editar", tint = Color(0xFF00F0FF))
+                                Icon(Icons.Default.Edit, contentDescription = "Editar", tint = Color(0xFF00F0FF))
                             }
                             if (profiles.size > 1) {
                                 IconButton(onClick = { viewModel.deleteProfile(profile) }) {
-                                    Icon(Icons.Default.Eliminar, contentDescription = "Eliminar", tint = Color(0xFFEF4444))
+                                    Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = Color(0xFFEF4444))
                                 }
                             }
                         }
@@ -144,7 +144,7 @@ private fun VpsProfileEditaror(
                     else -> null
                 }
                 if (error == null) {
-                    onGuardar(ServerProfile(initial?.id ?: 0L, name.trim(), host.trim(), parsedPuerto!!, user.trim(), password, initial?.tunnelType ?: "SSH Direct", initial?.wsHost ?: "", initial?.wsPath ?: "/ws", initial?.wsHeaders ?: "", initial?.sni ?: "", initial?.customCarga útil ?: "", initial?.isSeleccionado ?: false))
+                    onGuardar(ServerProfile(initial?.id ?: 0L, name.trim(), host.trim(), parsedPuerto!!, user.trim(), password, initial?.tunnelType ?: "SSH Direct", initial?.wsHost ?: "", initial?.wsPath ?: "/ws", initial?.wsHeaders ?: "", initial?.sni ?: "", initial?.customPayload ?: "", initial?.isSelected ?: false))
                 }
             }) { Text("Guardar") }
         },
