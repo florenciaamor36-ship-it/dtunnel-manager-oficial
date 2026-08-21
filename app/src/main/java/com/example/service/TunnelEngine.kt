@@ -18,8 +18,6 @@ object TunnelEngine {
     private var connectionJob: Job? = null
     private var session: com.jcraft.jsch.Session? = null
     private var channel: com.jcraft.jsch.Channel? = null
-    private var webSocket: okhttp3.WebSocket? = null
-    private var bridge: SshWebSocketBridge? = null
 
     init { _state.tryEmit(TunnelState.DISCONNECTED) }
 
@@ -46,28 +44,10 @@ object TunnelEngine {
                 val c = s.openChannel("shell")
                 c.connect(10_000)
                 channel = c
-                if (profile.tunnelType.contains("WebSocket", ignoreCase = true)) {
-                    val wsHost = profile.wsHost.ifBlank { profile.sshHost }
-                    val scheme = if (profile.tunnelType.contains("SSL", ignoreCase = true)) "wss" else "ws"
-                    val url = "$scheme://$wsHost${profile.wsPath.ifBlank { "/ws" }}"
-                    val headers = profile.wsHeaders.lines().mapNotNull { line ->
-                        val i = line.indexOf(':')
-                        if (i > 0) line.substring(0, i).trim() to line.substring(i + 1).trim() else null
-                    }.toMap()
-                    addLog("Preparando transporte WebSocket: $url", LogType.INFO)
-                    val transport = WebSocketTransport()
-                    val socket = transport.connect(url, headers, object : WebSocketTransport.Listener {
-                        override fun onOpen(socket: okhttp3.WebSocket) { webSocket = socket; bridge = SshWebSocketBridge(c, socket, coroutineScope); bridge?.start(c.inputStream); addLog("Handshake WebSocket aceptado.", LogType.SUCCESS) }
-                        override fun onBytes(bytes: ByteArray) { bridge?.onWebSocketBytes(bytes) }
-                        override fun onClosed(reason: String) { addLog("WebSocket cerrado: $reason", LogType.INFO) }
-                        override fun onFailure(error: Throwable) { addLog("Error WebSocket: ${error.message ?: "fallo"}", LogType.ERROR) }
-                    })
-                    webSocket = socket
-                }
                 _state.tryEmit(TunnelState.CONNECTED)
                 addLog("Canal SSH mantenido activo.", LogType.SUCCESS)
                 try { while (isActive && s.isConnected && c.isConnected) delay(5_000) }
-                finally { bridge?.close(); webSocket?.close(1000, "stopping"); c.disconnect(); s.disconnect(); bridge = null; webSocket = null; channel = null; session = null }
+                finally { c.disconnect(); s.disconnect(); channel = null; session = null }
                 if (isActive) _state.tryEmit(TunnelState.DISCONNECTED)
             } catch (e: CancellationException) { throw e
             } catch (e: Exception) {
