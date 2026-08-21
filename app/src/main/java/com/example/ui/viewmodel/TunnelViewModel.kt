@@ -157,6 +157,10 @@ class TunnelViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch { userDao.resetHwid(user.id) }
     }
 
+    fun setUserStatus(user: com.example.data.ManagedUser, status: String) {
+        viewModelScope.launch { userDao.setStatus(user.id, status) }
+    }
+
     fun clearLogs() {
         _logs.value = emptyList()
     }
