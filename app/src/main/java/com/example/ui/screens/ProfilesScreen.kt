@@ -12,11 +12,13 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Dns
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.ServerProfile
@@ -26,12 +28,11 @@ import com.example.ui.viewmodel.TunnelViewModel
 fun ProfilesScreen(viewModel: TunnelViewModel) {
     val profiles by viewModel.profiles.collectAsState()
     val selectedProfile by viewModel.selectedProfile.collectAsState()
+    var editorOpen by remember { mutableStateOf(false) }
+    var editingProfile by remember { mutableStateOf<ServerProfile?>(null) }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF0A0F1D))
-            .padding(16.dp),
+        modifier = Modifier.fillMaxSize().background(Color(0xFF0A0F1D)).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Row(
@@ -39,98 +40,52 @@ fun ProfilesScreen(viewModel: TunnelViewModel) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
         ) {
-            Text(
-                text = "Server Profiles",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
+            Text("VPS Profiles", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
             Button(
-                onClick = {
-                    val newProfile = ServerProfile(
-                        name = "New Server ${profiles.size + 1}",
-                        sshHost = "sg${profiles.size + 1}.dtunnel.secure.net",
-                        sshPort = 443,
-                        sshUser = "nettunnel",
-                        sshPass = "123456",
-                        tunnelType = "SSH + WebSocket"
-                    )
-                    viewModel.saveProfile(newProfile)
-                },
+                onClick = { editingProfile = null; editorOpen = true },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00F0FF)),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = Color(0xFF0A0F1D))
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = "Add Server", color = Color(0xFF0A0F1D), fontWeight = FontWeight.Bold)
+                Icon(Icons.Default.Add, contentDescription = "Add", tint = Color(0xFF0A0F1D))
+                Spacer(Modifier.width(4.dp))
+                Text("Add VPS", color = Color(0xFF0A0F1D), fontWeight = FontWeight.Bold)
             }
         }
 
         LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
+            modifier = Modifier.fillMaxWidth().weight(1f),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(profiles) { profile ->
+            items(profiles, key = { it.id }) { profile ->
                 val isSelected = selectedProfile?.id == profile.id
                 Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { viewModel.selectProfile(profile) },
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (isSelected) Color(0xFF1E293B) else Color(0xFF131C2E)
-                    ),
+                    modifier = Modifier.fillMaxWidth().clickable { viewModel.selectProfile(profile) },
+                    colors = CardDefaults.cardColors(containerColor = if (isSelected) Color(0xFF1E293B) else Color(0xFF131C2E)),
                     shape = RoundedCornerShape(12.dp),
                     border = if (isSelected) BorderStroke(1.dp, Color(0xFF00F0FF)) else null
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                     ) {
                         Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Dns,
-                                contentDescription = "Server",
-                                tint = if (isSelected) Color(0xFF00F0FF) else Color(0xFF64748B),
-                                modifier = Modifier.size(32.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
+                            Icon(Icons.Default.Dns, contentDescription = "VPS", tint = if (isSelected) Color(0xFF00F0FF) else Color(0xFF64748B), modifier = Modifier.size(32.dp))
+                            Spacer(Modifier.width(12.dp))
                             Column {
-                                Text(
-                                    text = profile.name,
-                                    fontSize = 15.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White
-                                )
-                                Spacer(modifier = Modifier.height(2.dp))
-                                Text(
-                                    text = "${profile.sshHost}:${profile.sshPort} • ${profile.tunnelType}",
-                                    fontSize = 12.sp,
-                                    color = Color(0xFF94A3B8)
-                                )
+                                Text(profile.name, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                                Text("${profile.sshHost}:${profile.sshPort} • ${profile.sshUser}", fontSize = 12.sp, color = Color(0xFF94A3B8))
+                                Text(profile.tunnelType, fontSize = 11.sp, color = Color(0xFF64748B))
                             }
                         }
-
                         Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                            if (isSelected) {
-                                Icon(
-                                    imageVector = Icons.Default.CheckCircle,
-                                    contentDescription = "Selected",
-                                    tint = Color(0xFF10B981)
-                                )
+                            if (isSelected) Icon(Icons.Default.CheckCircle, contentDescription = "Selected", tint = Color(0xFF10B981))
+                            IconButton(onClick = { editingProfile = profile; editorOpen = true }) {
+                                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color(0xFF00F0FF))
                             }
                             if (profiles.size > 1) {
-                                Spacer(modifier = Modifier.width(8.dp))
                                 IconButton(onClick = { viewModel.deleteProfile(profile) }) {
-                                    Icon(
-                                        imageVector = Icons.Default.Delete,
-                                        contentDescription = "Delete",
-                                        tint = Color(0xFFEF4444)
-                                    )
+                                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color(0xFFEF4444))
                                 }
                             }
                         }
@@ -139,4 +94,60 @@ fun ProfilesScreen(viewModel: TunnelViewModel) {
             }
         }
     }
+
+    if (editorOpen) {
+        VpsProfileEditor(
+            initial = editingProfile,
+            onDismiss = { editorOpen = false },
+            onSave = { profile ->
+                if (editingProfile == null) viewModel.saveProfile(profile) else viewModel.updateProfile(profile)
+                editorOpen = false
+            }
+        )
+    }
+}
+
+@Composable
+private fun VpsProfileEditor(
+    initial: ServerProfile?,
+    onDismiss: () -> Unit,
+    onSave: (ServerProfile) -> Unit
+) {
+    var name by remember { mutableStateOf(initial?.name ?: "") }
+    var host by remember { mutableStateOf(initial?.sshHost ?: "") }
+    var port by remember { mutableStateOf((initial?.sshPort ?: 22).toString()) }
+    var user by remember { mutableStateOf(initial?.sshUser ?: "") }
+    var password by remember { mutableStateOf(initial?.sshPass ?: "") }
+    var error by remember { mutableStateOf<String?>(null) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(if (initial == null) "Add VPS" else "Edit VPS") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(name, { name = it }, label = { Text("Name") }, singleLine = true)
+                OutlinedTextField(host, { host = it }, label = { Text("IP or domain") }, singleLine = true)
+                OutlinedTextField(port, { port = it.filter(Char::isDigit) }, label = { Text("SSH port") }, singleLine = true)
+                OutlinedTextField(user, { user = it }, label = { Text("SSH user") }, singleLine = true)
+                OutlinedTextField(password, { password = it }, label = { Text("SSH password") }, singleLine = true, visualTransformation = PasswordVisualTransformation())
+                error?.let { Text(it, color = MaterialTheme.colorScheme.error, fontSize = 12.sp) }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                val parsedPort = port.toIntOrNull()
+                error = when {
+                    name.isBlank() -> "Enter a name"
+                    host.isBlank() -> "Enter an IP or domain"
+                    user.isBlank() -> "Enter an SSH user"
+                    parsedPort == null || parsedPort !in 1..65535 -> "Enter a valid port"
+                    else -> null
+                }
+                if (error == null) {
+                    onSave(ServerProfile(initial?.id ?: 0L, name.trim(), host.trim(), parsedPort!!, user.trim(), password, initial?.tunnelType ?: "SSH Direct", initial?.wsHost ?: "", initial?.wsPath ?: "/ws", initial?.wsHeaders ?: "", initial?.sni ?: "", initial?.customPayload ?: "", initial?.isSelected ?: false))
+                }
+            }) { Text("Save") }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
+    )
 }
