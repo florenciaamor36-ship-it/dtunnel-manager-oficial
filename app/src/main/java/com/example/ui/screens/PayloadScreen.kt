@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.example.ui.viewmodel.TunnelViewModel
 
 @Composable
-fun Carga útilScreen(viewModel: TunnelViewModel) {
+fun PayloadScreen(viewModel: TunnelViewModel) {
     val selectedProfile by viewModel.selectedProfile.collectAsState()
     var payload by remember(selectedProfile) {
         mutableStateOf(selectedProfile?.customCarga útil ?: "GET / HTTP/1.1[crlf]Host: [host_port][crlf]Upgrade: websocket[crlf][crlf]")
