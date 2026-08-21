@@ -69,7 +69,7 @@ fun DashboardScreen(viewModel: TunnelViewModel) {
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = selectedProfile?.name ?: "No Server Selected",
+                            text = selectedProfile?.name ?: "No Server Seleccionado",
                             fontSize = 16.sp,
                             color = Color.White,
                             fontWeight = FontWeight.Bold
@@ -101,7 +101,7 @@ fun DashboardScreen(viewModel: TunnelViewModel) {
                 ) {
                     InfoChip(label = "Protocol", value = selectedProfile?.tunnelType ?: "SSH+WS")
                     InfoChip(label = "Host", value = selectedProfile?.sshHost ?: "N/A")
-                    InfoChip(label = "Port", value = selectedProfile?.sshPort?.toString() ?: "22")
+                    InfoChip(label = "Puerto", value = selectedProfile?.sshPort?.toString() ?: "22")
                 }
             }
         }
@@ -168,7 +168,7 @@ fun DashboardScreen(viewModel: TunnelViewModel) {
                                 TunnelState.CONNECTING -> Icons.Default.Refresh
                                 else -> Icons.Default.PowerSettingsNew
                             },
-                            contentDescription = "Connect State",
+                            contentDescription = "Estado de conexión",
                             tint = Color(0xFF0A0F1D),
                             modifier = Modifier.size(40.dp)
                         )
