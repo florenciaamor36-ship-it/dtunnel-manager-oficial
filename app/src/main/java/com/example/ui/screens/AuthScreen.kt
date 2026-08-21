@@ -112,7 +112,7 @@ fun AuthScreen(viewModel: TunnelViewModel) {
                 OutlinedTextField(
                     value = remoteAuthUrl,
                     onValueChange = { remoteAuthUrl = it },
-                    label = { Text("Auth Script URL") },
+                    label = { Text("URL del script de autenticación") },
                     modifier = Modifier.fillMaxWidth(),
                     colors = textFieldColors()
                 )
@@ -143,7 +143,7 @@ fun AuthScreen(viewModel: TunnelViewModel) {
             }
         }
 
-        // Database & ADM Integration Guide
+        // Database & ADM Integration Guía
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = Color(0xFF131C2E)),
@@ -151,7 +151,7 @@ fun AuthScreen(viewModel: TunnelViewModel) {
         ) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(imageVector = Icons.Default.Security, contentDescription = "Guide", tint = Color(0xFF00F0FF), modifier = Modifier.size(20.dp))
+                    Icon(imageVector = Icons.Default.Security, contentDescription = "Guía", tint = Color(0xFF00F0FF), modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(text = "¿Cómo conectar base de datos y ADM / Rufus?", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.White)
                 }
