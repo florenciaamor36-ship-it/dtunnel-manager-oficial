@@ -21,7 +21,7 @@ import com.example.data.LogType
 import com.example.ui.viewmodel.TunnelViewModel
 
 @Composable
-fun RegistrosScreen(viewModel: TunnelViewModel) {
+fun LogsScreen(viewModel: TunnelViewModel) {
     val logs by viewModel.logs.collectAsState()
 
     Column(
