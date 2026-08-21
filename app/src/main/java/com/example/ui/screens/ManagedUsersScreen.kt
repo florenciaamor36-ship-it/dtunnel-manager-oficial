@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LockReset
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -41,6 +42,7 @@ fun ManagedUsersScreen(viewModel: TunnelViewModel) {
                         } }
                         Row {
                             IconButton(onClick = { viewModel.resetUserHwid(user) }) { Icon(Icons.Default.LockReset, "Reset HWID", tint = Color(0xFFF59E0B)) }
+                            IconButton(onClick = { viewModel.setUserStatus(user, if (user.status == "Suspended") "Active" else "Suspended") }) { Icon(Icons.Default.Block, "Suspend or activate", tint = if (user.status == "Suspended") Color(0xFF10B981) else Color(0xFFF59E0B)) }
                             IconButton(onClick = { viewModel.deleteManagedUser(user) }) { Icon(Icons.Default.Delete, "Delete", tint = Color(0xFFEF4444)) }
                         }
                     }
