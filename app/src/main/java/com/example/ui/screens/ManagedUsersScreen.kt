@@ -6,7 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Eliminar
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LockReset
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Block
@@ -43,7 +43,7 @@ fun ManagedUsersScreen(viewModel: TunnelViewModel) {
                         Row {
                             IconButton(onClick = { viewModel.resetUserHwid(user) }) { Icon(Icons.Default.LockReset, "Reset HWID", tint = Color(0xFFF59E0B)) }
                             IconButton(onClick = { viewModel.setUserStatus(user, if (user.status == "Suspended") "Active" else "Suspended") }) { Icon(Icons.Default.Block, "Suspend or activate", tint = if (user.status == "Suspended") Color(0xFF10B981) else Color(0xFFF59E0B)) }
-                            IconButton(onClick = { viewModel.deleteManagedUser(user) }) { Icon(Icons.Default.Eliminar, "Eliminar", tint = Color(0xFFEF4444)) }
+                            IconButton(onClick = { viewModel.deleteManagedUser(user) }) { Icon(Icons.Default.Delete, "Eliminar", tint = Color(0xFFEF4444)) }
                         }
                     }
                 }
@@ -58,7 +58,7 @@ fun ManagedUsersScreen(viewModel: TunnelViewModel) {
 @Composable
 private fun ManagedUserEditaror(onDismiss: () -> Unit, onGuardar: (ManagedUser) -> Unit) {
     var username by remember { mutableStateOf("") }; var password by remember { mutableStateOf("") }
-    var hwid by remember { mutableStateOf("") }; var vence by remember { mutableStateOf("") }
+    var hwid by remember { mutableStateOf("") }; var expires by remember { mutableStateOf("") }
     var maxDevices by remember { mutableStateOf("1") }; var protocols by remember { mutableStateOf("SSH") }
     var error by remember { mutableStateOf<String?>(null) }
     AlertDialog(onDismissRequest = onDismiss, title = { Text("Agregar usuario") }, text = { Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
