@@ -6,7 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Eliminar
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -46,8 +46,8 @@ fun LogsScreen(viewModel: TunnelViewModel) {
                     color = Color.White
                 )
             }
-            IconButton(onClick = { viewModel.clearRegistros() }) {
-                Icon(imageVector = Icons.Default.Eliminar, contentDescription = "Borrar registros", tint = Color(0xFF94A3B8))
+            IconButton(onClick = { viewModel.clearLogs() }) {
+                Icon(imageVector = Icons.Default.Delete, contentDescription = "Borrar registros", tint = Color(0xFF94A3B8))
             }
         }
 
