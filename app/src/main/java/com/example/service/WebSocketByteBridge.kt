@@ -27,7 +27,7 @@ class WebSocketByteBridge(
             try {
                 while (isActive && !closed.get()) {
                     val count = input.read(buffer)
-                    if (count < 0 || (count > 0 && !socket.send(ByteString.of(buffer.copyOf(count))))) break
+                    if (count < 0 || (count > 0 && !socket.send(ByteString.of(buffer, 0, count)))) break
                 }
             } finally { close() }
         }
