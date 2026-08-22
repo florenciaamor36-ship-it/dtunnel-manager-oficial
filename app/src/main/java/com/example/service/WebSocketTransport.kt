@@ -22,10 +22,6 @@ class WebSocketTransport(
         fun onFailure(error: Throwable)
     }
 
-    fun sendBytes(socket: WebSocket, bytes: ByteArray): Boolean = socket.send(ByteString.Companion.of(bytes))
-
-    fun close(socket: WebSocket) { socket.close(1000, "closed by user") }
-
     fun connect(url: String, headers: Map<String, String>, listener: Listener): WebSocket {
         require(url.startsWith("ws://") || url.startsWith("wss://")) { "URL WebSocket inválida" }
         val request = Request.Builder().url(url).apply {
