@@ -54,14 +54,17 @@ object TunnelEngine {
                         if (separator > 0) line.substring(0, separator).trim() to line.substring(separator + 1).trim() else null
                     }.toMap()
                     val opened = CompletableDeferred<okhttp3.WebSocket>()
+                    var bridge: SshWebSocketBridge? = null
                     val transport = WebSocketTransport()
                     ws = transport.connect(url, headers, object : WebSocketTransport.Listener {
                         override fun onOpen(socket: okhttp3.WebSocket) { opened.complete(socket); addLog("Handshake WebSocket 101 aceptado.", LogType.SUCCESS) }
-                        override fun onBytes(bytes: ByteArray) { addLog("WebSocket recibió ${bytes.size} bytes.", LogType.INFO) }
+                        override fun onBytes(bytes: ByteArray) { bridge?.receive(bytes) }
                         override fun onClosed(reason: String) { addLog("WebSocket cerrado: $reason", LogType.INFO) }
                         override fun onFailure(error: Throwable) { opened.completeExceptionally(error) }
                     })
                     withTimeout(15_000) { opened.await() }
+                    bridge = SshWebSocketBridge(c, ws!!, coroutineScope)
+                    bridge.start(c.getInputStream())
                 }
                 _state.tryEmit(TunnelState.CONNECTED)
                 addLog("Canal SSH mantenido activo.", LogType.SUCCESS)
