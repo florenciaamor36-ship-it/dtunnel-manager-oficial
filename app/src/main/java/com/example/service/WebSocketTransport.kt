@@ -22,7 +22,7 @@ class WebSocketTransport(
         fun onFailure(error: Throwable)
     }
 
-    fun sendBytes(socket: WebSocket, bytes: ByteArray): Boolean = socket.send(ByteString.of(bytes))
+    fun sendBytes(socket: WebSocket, bytes: ByteArray): Boolean = socket.send(ByteString.Companion.of(bytes))
 
     fun close(socket: WebSocket) { socket.close(1000, "closed by user") }
 
